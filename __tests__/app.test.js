@@ -27,12 +27,12 @@ describe("/api/topics", () => {
     describe("GET", () => {
         test('Status 200, responds with an array', () => {
             return request(app).get('/api/topics').expect(200).then(({body:topics}) => {
-                expect(topics.constructor).toBe(Array)
+                expect(topics.topics.constructor).toBe(Array)
             })
         })
         test('Status 200, the objects on the response contain the keys "slug" "description"', () => {
-            return request(app).get("/api/topics").expect(200).then((({body: topics}) => {
-                topics.forEach((topic) => {
+            return request(app).get("/api/topics").expect(200).then((({body: response}) => {
+                response.topics.forEach((topic) => {
                     expect(topic).toEqual(
                         expect.objectContaining({
                         slug: expect.any(String),
