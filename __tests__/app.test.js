@@ -9,19 +9,19 @@ beforeEach(() => seed(testData));
 
 
 
-    describe('All wrong paths return a status 404 and a message  "Path not found"', () => {
-        test('/api/topis', () => {
-            return request(app).get("/api/topis").expect(404).then(({body}) => {
-                expect(body.msg).toBe("Path not found")
-            });
+describe('All wrong paths return a status 404 and a message  "Path not found"', () => {
+    test('/api/topis', () => {
+        return request(app).get("/api/topis").expect(404).then(({body}) => {
+            expect(body.msg).toBe("Path not found")
         });
-
-        test('/api/tipics', () => {
-            return request(app).get("/api/tipics").expect(404).then(({body})=> {
-                expect(body.msg).toBe("Path not found")
-            })
-        })
     });
+
+    test('/api/tipics', () => {
+        return request(app).get("/api/tipics").expect(404).then(({body})=> {
+            expect(body.msg).toBe("Path not found")
+        })
+    })
+});
 
 describe("/api/topics", () => {
     describe("GET", () => {
@@ -42,8 +42,50 @@ describe("/api/topics", () => {
                 });
                 
 
-            }))
+            }));
+            
+        });
+    });
+});
+
+
+describe('/api/articles/:article_id', () => {
+    describe('GET', () => {
+        test('Status 200, responds with an Object', () => {
+            return request(app).get("/api/articles/1").expect(200)
+        })
+
+        test('Status 200, the returned object has the correct keys and datatypes', () => {
+            return request(app).get("/api/articles/1").expect(200).then(({body:{article}}) => {
+                expect(article).toEqual(
+                    expect.objectContaining({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number)
+                    })
+                )
+            })
+        });
+        
+        test('Status 404 for valid requests not found', () => {
+            return request(app).get("/api/articles/90000").expect(404).then(({body}) => {
+                expect(body.msg).toBe('Article not found')
+            })
             
         })
+
+        test('Status 400 for invalid requests', () => {
+            return request(app).get('/api/articles/string').expect(400).then(({body}) => {
+                
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+
+        
     })
+
 })
