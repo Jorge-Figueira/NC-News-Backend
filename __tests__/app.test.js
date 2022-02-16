@@ -51,22 +51,18 @@ describe("/api/topics", () => {
 
 describe('/api/articles/:article_id', () => {
     describe('GET', () => {
-        test('Status 200, responds with an Object', () => {
-            return request(app).get("/api/articles/1").expect(200)
-        })
-
         test('Status 200, the returned object has the correct keys and datatypes', () => {
             return request(app).get("/api/articles/1").expect(200).then(({body:{article}}) => {
-                expect(article).toEqual(
-                    expect.objectContaining({
-                    article_id: expect.any(Number),
-                    title: expect.any(String),
-                    topic: expect.any(String),
-                    author: expect.any(String),
-                    body: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number)
-                    })
+                console.log(article)
+                expect(article).toEqual({
+                    article_id: 1,
+                    title: 'Living in the shadow of a great man',
+                    topic: 'mitch',
+                    author: 'butter_bridge',
+                    body: 'I find this existence challenging',
+                    created_at: '2020-07-09T20:11:00.000Z',
+                    votes: 100
+                  }             
                 )
             })
         });
@@ -86,6 +82,47 @@ describe('/api/articles/:article_id', () => {
         })
 
         
+    })
+
+
+    describe('PATCH', () => {
+        test('status 200, if the id is valid and exist in the database, the API responds with the updated article', () => {
+             const article1 = {
+                article_id: 1,
+                title: 'Living in the shadow of a great man',
+                topic: 'mitch',
+                author: 'butter_bridge',
+                body: 'I find this existence challenging',
+                created_at: '2020-07-09T20:11:00.000Z',
+                votes: 100
+              }
+            return request(app)
+                .patch("/api/articles/1")
+                .send({inc_votes: 4})
+                .expect(200)
+                .then(({body:{returnedArticle}}) => {
+                    expect(returnedArticle).toEqual(
+                        expect.objectContaining({
+                        article_id: article1.article_id,
+                        title: article1.title,
+                        topic: article1.topic,
+                        author: article1.author,
+                        body: article1.body,
+                        created_at: article1.created_at,
+                        votes: article1.votes +4
+                        })
+                    )
+            })
+                
+        
+        });
+
+        test('status 400, article not found', () => {
+            return request(app).patch("/api/articles/90000").send({inc_votes: 1}).send(404).then((mistery) => {
+                console.log(mistery.body)
+            })
+
+        })
     })
 
 })
