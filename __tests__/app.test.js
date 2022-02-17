@@ -200,3 +200,38 @@ describe('/api/articles/:article_id', () => {
     })
 
 })
+
+describe('/api/users', () => {
+
+    describe('GET', () => {
+        
+        test('Status 200, the returned object has the correct keys and datatypes', () => {
+            return request(app)
+                .get("/api/users")
+                .expect(200).then(({body:{users}}) => {
+                    users.forEach((user) => {
+                        expect(user).toEqual(
+                            expect.objectContaining({
+                                username: expect.any(String)
+                            })
+                        )
+                    })
+                })
+                
+
+        });
+
+        test("Status 200, returns the correct data", () => {
+            return request(app)
+                .get("/api/users")
+                .expect(200).then(({body: {users}}) => {
+                    expect(users).toEqual([
+                        { username: 'butter_bridge' },
+                        { username: 'icellusedkars' },
+                        { username: 'rogersop' },
+                        { username: 'lurker' }
+                      ])
+                })
+        })
+    })
+})
