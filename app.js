@@ -1,5 +1,5 @@
 const express = require('express');
-const {getTopics, getArticlesById, updateArticleId, getUsers} = require("./controllers/news.controllers")
+const {getTopics, getArticlesById, updateArticleId, getUsers, getCommentsForArticle} = require("./controllers/news.controllers")
 const {error500, customerrors,psqlerrors} = require('./errors');
 
 const app = express();
@@ -9,6 +9,7 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticlesById)
 app.patch("/api/articles/:article_id", updateArticleId)
 app.get('/api/users', getUsers)
+app.get('/api/articles/:article_id/comments', getCommentsForArticle)
 
 
 app.use(customerrors)
