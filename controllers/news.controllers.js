@@ -9,13 +9,17 @@ exports.getTopics = (req, res) => {
 
 exports.getArticlesById = (req, res, next) => {
     const articleId = req.params.article_id
-    fetchArticlesById(articleId)
-        .then((article) => {
-            res.status(200).send({article})
+    Promise.all([fetchArticlesById(articleId),fetchCommentsForArticle(articleId)])
+        .then((mistery) => {
+            const retrunObject = {article: mistery[0],comment_count: mistery[1].length}
+            
+            res.status(200).send(retrunObject)
         })
         .catch((err) => {
             next(err)
         })
+    
+    
 }
 
 exports.updateArticleId = (req, res, next) => {
