@@ -1,4 +1,4 @@
-const {fetchTopics, fetchArticlesById, upvoteArticle, fetchUsers, fetchCommentsForArticle} = require('../models/news.models')
+const {fetchTopics, fetchArticlesById, upvoteArticle, fetchUsers, fetchCommentsForArticle, countCommentsByArticle} = require('../models/news.models')
 
 exports.getTopics = (req, res) => {
     fetchTopics().then((topics) => {
@@ -9,9 +9,9 @@ exports.getTopics = (req, res) => {
 
 exports.getArticlesById = (req, res, next) => {
     const articleId = req.params.article_id
-    Promise.all([fetchArticlesById(articleId),fetchCommentsForArticle(articleId)])
-        .then((mistery) => {
-            const retrunObject = {article: mistery[0],comment_count: mistery[1].length}
+    Promise.all([fetchArticlesById(articleId),countCommentsByArticle(articleId)])
+        .then(([article, comment_count]) => {
+            const retrunObject = {article, comment_count}
             
             res.status(200).send(retrunObject)
         })

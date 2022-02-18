@@ -49,3 +49,10 @@ exports.fetchCommentsForArticle = (articleId) => {
             
         })
 }
+
+exports.countCommentsByArticle = (articleId) => {
+    return db.query("SELECT COUNT (*) FROM comments WHERE article_id = $1;", [articleId])
+        .then(({rows}) => {
+            return parseInt(rows[0].count)
+        })
+}
