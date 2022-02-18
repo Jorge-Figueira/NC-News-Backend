@@ -397,3 +397,51 @@ describe('/api/articles/:article_id/comments', () => {
 })
 
 
+describe('/api/articles', () => {
+    describe('GET', () => {
+        test('Status 200, returns an object with the correct keys and data', () => {
+            return request(app)
+                .get("/api/articles")
+                .expect(200)
+                .then(({body: {articles}}) => {
+                    articles.forEach((article) => {
+                        expect(article).toEqual(
+                            expect.objectContaining({
+                                author: expect.any(String),
+                                title: expect.any(String),
+                                article_id: expect.any(Number),
+                                topic: expect.any(String),
+                                created_at: expect.any(String),
+                                votes: expect.any(Number),
+                                comment_count: expect.any(String)
+                            })
+                        )
+                    })
+                    
+                })
+        })  
+        test('Status 200, the returned articles are orderes correctly', () => {
+            return request(app)
+                .get("/api/articles")
+                .expect(200)
+                .then(({body: {articles}}) => {
+                    const orderedIndexes =articles.map((article) => {
+                        return article.article_id
+                    })
+                    
+                    expect(orderedIndexes).toEqual([3, 6,  2, 12, 5, 1, 9, 10, 4, 8, 11, 7])
+                })
+        })
+        test("Status 200, the articles have the correct comment_count", () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then(({body:{articles}}) => {
+                    const comment_counts = articles.map((article) => {
+                        return article.comment_count
+                    })
+                    expect(comment_counts).toEqual(['2', '1',  '0', '0', '2', '11', '2', '0', '0', '0',  '0', '0'])
+                })
+        })      
+    })
+})
