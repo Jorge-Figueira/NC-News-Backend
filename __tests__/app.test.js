@@ -445,3 +445,37 @@ describe('/api/articles', () => {
         })      
     })
 })
+
+
+
+describe.only('/api/articles/:article_id/comment', () => {
+    describe("POST", () => {
+        test("status 200, returns an object with the posted commnet", () => {
+            return request(app).post("/api/articles/1/comments")
+                .expect(200)
+                .send({username:"lurker", body:"Let's see if it works"})
+                .then(({body:{comment}}) => {
+                    expect(comment.author).toBe("lurker")
+                })
+        })
+
+        test("Status 404, returns an error if the user is not on users table user not found", () => {
+            return request(app).post("/api/articles/1/comments")
+                .expect(404)
+                .send({username: "Tecnobutrul", body: "Let's see if it works"})
+                .then(({body: {msg}}) => {
+                    expect(msg).toBe("author not found")
+                })
+                
+        });
+
+        test("Status 404, return an error if the article id does not exist", () => {
+            return request(app).post("/api/articles/999999999/comments")
+                .expect(404)
+                .send({username:"lurker", body:"Let's see if it works"})
+                .then(({body:{msg}}) => {
+                    expect(msg).toBe("article_id not found")
+                })
+        })
+    })
+})

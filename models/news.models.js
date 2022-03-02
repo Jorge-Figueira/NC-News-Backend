@@ -68,3 +68,27 @@ exports.fetchArticles = () => {
             return rows
         })
 };
+
+
+exports.writeComment = ({body, params}) => {
+    return db.query(
+        "INSERT INTO comments  (body, author, article_id, votes, created_at) VALUES ($1, $2, $3, 0, CURRENT_TIMESTAMP) RETURNING *;",[body.body, body.username, params.article_id ])
+        .then(({rows}) => {
+            return rows[0];
+        })
+        .catch((error) => {
+            if (error.code === "23503") {
+                const columns =["body", "author", "article_id", "votes", "created_at"];
+                const columnWithError = columns.map((column) => {
+                    if (error.detail.includes(column)) {
+                        return column
+                    }
+                }).filter((column) => column !== undefined)
+
+                return Promise.reject({status: 404, msg: `${columnWithError[0]} not found`})
+            } else {
+                return Promise.reject(error)
+            }
+        })
+
+}
