@@ -1,4 +1,4 @@
-const {fetchTopics, fetchArticlesById, upvoteArticle, fetchUsers, fetchCommentsForArticle, fetchArticles, writeComment} = require('../models/news.models')
+const {fetchTopics, fetchArticlesById, upvoteArticle, fetchUsers, fetchCommentsForArticle, fetchArticles, writeComment, removeComment} = require('../models/news.models')
 
 exports.getTopics = (req, res) => {
     fetchTopics().then((topics) => {
@@ -54,7 +54,10 @@ exports.getCommentsForArticle = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    fetchArticles()
+    const sort_by = req.query.sort_by;
+    const order = req.query.order;
+    const topic = req.query.topic;
+    fetchArticles(sort_by, order, topic)
         .then((articles) => {
             res.status(200).send({articles})
         })
@@ -67,6 +70,17 @@ exports.postComment = (req, res, next) => {
         }).catch((err) => {
             next(err)
         })
+}
+
+exports.deleteComment = (req, res, next) => {
+    removeComment(req.params.comment_id)
+        .then((comment) => {
+            res.status(204).send()
+        })
+        .catch((err) => {
+            next(err)
+        })
+    
 }
 
 
