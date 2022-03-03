@@ -62,11 +62,40 @@ exports.fetchCommentsForArticle = (articleId) => {
         })
 }
 
-exports.fetchArticles = () => {
-    return db.query("SELECT articles.* , COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;")
-        .then(({rows}) => {            
+exports.fetchArticles = (sort_by="created_at", order="desc", topic) => {
+    
+   
+    
+    const columnsAvailable = ["article_id", "title", "topic", "author", "body", "created_at", "votes"];
+    if (!columnsAvailable.includes(sort_by)){
+        return Promise.reject({status:404, msg:"Column not found"})
+    }
+    const ordersAvailable = ["asc", "desc"]
+    if (!ordersAvailable.includes(order)) {
+        return Promise.reject({status:404, msg: "Order by not unavailable"})
+    }
+    const itemsToQuery = [];
+    let queryString = `SELECT articles.* , COUNT(comments.comment_id) AS comment_count FROM articles   LEFT JOIN comments ON articles.article_id = comments.article_id `;
+    if (topic) {
+        itemsToQuery.push(topic);
+        queryString += "WHERE articles.topic = $1 ";
+        itemsToQuery.push(topic);
+    }
+
+    queryString += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order.toUpperCase()};`;
+
+
+    
+    if(itemsToQuery.length >0) {
+        return db.query(queryString, [topic]).then(({rows}) => {
             return rows
-        })
+        });
+    } else {
+        return db.query(queryString) 
+            .then(({rows}) => {            
+                return rows
+            })
+    }        
 };
 
 
@@ -89,6 +118,26 @@ exports.writeComment = ({body, params}) => {
             } else {
                 return Promise.reject(error)
             }
+        })
+
+}
+
+
+exports.removeComment = (comment_id) => {
+
+    return db.query("SELECT *  FROM comments WHERE comment_id = $1;", [comment_id])
+        .then(({rows}) => {
+            if (rows.length === 0 ) {
+                return Promise.reject({status: 404, msg: "Comment not found"})
+                            
+            }
+        })
+        .then(() => {
+            return db.query("DELETE  FROM comments WHERE comment_id = $1 RETURNING *;", [comment_id])
+                .then(({rows}) => {
+                    return rows[0]
+                })
+    
         })
 
 }

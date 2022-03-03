@@ -420,7 +420,7 @@ describe('/api/articles', () => {
                     
                 })
         })  
-        test('Status 200, the returned articles are orderes correctly', () => {
+        test('Status 200, the returned articles are ordered correctly', () => {
             return request(app)
                 .get("/api/articles")
                 .expect(200)
@@ -442,13 +442,97 @@ describe('/api/articles', () => {
                     })
                     expect(comment_counts).toEqual(['2', '1',  '0', '0', '2', '11', '2', '0', '0', '0',  '0', '0'])
                 })
-        })      
+        })
+        
+        test("Status 200, the articles are sorted by author in default order column", () => {
+            return request(app)
+                .get("/api/articles?sort_by=author")
+                .expect(200)
+                .then(({body: {articles}}) => {
+                    const authors = articles.map(({author}) => author)
+                    expect(authors).toEqual([
+                        'rogersop',      'rogersop',
+                        'rogersop',      'icellusedkars',
+                        'icellusedkars', 'icellusedkars',
+                        'icellusedkars', 'icellusedkars',
+                        'icellusedkars', 'butter_bridge',
+                        'butter_bridge', 'butter_bridge'
+                      ])
+                })
+                
+        })
+        test("Status 200, the articles are sorted by date if no query is sent", () => {
+            return request(app)
+                .get("/api/articles")
+                .expect(200)
+                .then(({body: {articles}}) => {
+                    const dates = articles.map(({created_at}) => created_at)
+                    expect(dates).toEqual([
+                        '2020-11-03T09:12:00.000Z',
+                        '2020-10-18T01:00:00.000Z',
+                        '2020-10-16T05:03:00.000Z',
+                        '2020-10-11T11:24:00.000Z',
+                        '2020-08-03T13:14:00.000Z',
+                        '2020-07-09T20:11:00.000Z',
+                        '2020-06-06T09:10:00.000Z',
+                        '2020-05-14T04:15:00.000Z',
+                        '2020-05-06T01:14:00.000Z',
+                        '2020-04-17T01:08:00.000Z',
+                        '2020-01-15T22:21:00.000Z',
+                        '2020-01-07T14:08:00.000Z'
+                      ])
+                })
+        })
+
+        test("Status 200, the articles are sorted by date in ascending order if only an order query is passed", () => {
+            return request(app)
+                .get("/api/articles?order=asc")
+                .expect(200)
+                .then(({body:{articles}}) => {
+                    const dates = articles.map(({created_at}) => created_at)
+                    expect(dates).toEqual([
+                        '2020-01-07T14:08:00.000Z',
+                        '2020-01-15T22:21:00.000Z',
+                        '2020-04-17T01:08:00.000Z',
+                        '2020-05-06T01:14:00.000Z',
+                        '2020-05-14T04:15:00.000Z',
+                        '2020-06-06T09:10:00.000Z',
+                        '2020-07-09T20:11:00.000Z',
+                        '2020-08-03T13:14:00.000Z',
+                        '2020-10-11T11:24:00.000Z',
+                        '2020-10-16T05:03:00.000Z',
+                        '2020-10-18T01:00:00.000Z',
+                        '2020-11-03T09:12:00.000Z'
+                      ])
+                })
+        })
+
+        test("Status 200, querying by topic cats returns only articles with topic cats",() => {
+            return request(app)
+                .get("/api/articles?topic=cats")
+                .expect(200)
+                .then(({body: {articles}}) => {
+                    expect(articles).toEqual([
+                        {
+                          article_id: 5,
+                          title: 'UNCOVERED: catspiracy to bring down democracy',
+                          topic: 'cats',
+                          author: 'rogersop',
+                          body: 'Bastet walks amongst us, and the cats are taking arms!',
+                          created_at: '2020-08-03T13:14:00.000Z',
+                          votes: 0,
+                          comment_count: '2'
+                        }
+                      ])
+
+                })
+        })
     })
 })
 
 
 
-describe.only('/api/articles/:article_id/comment', () => {
+describe('/api/articles/:article_id/comment', () => {
     describe("POST", () => {
         test("status 200, returns an object with the posted commnet", () => {
             return request(app).post("/api/articles/1/comments")
@@ -475,6 +559,29 @@ describe.only('/api/articles/:article_id/comment', () => {
                 .send({username:"lurker", body:"Let's see if it works"})
                 .then(({body:{msg}}) => {
                     expect(msg).toBe("article_id not found")
+                })
+        })
+    })
+})
+
+
+describe("/api/comments/:comment_id", () => {
+    describe("DELETE", () => {
+        test("Status 204, removes the comment for the given id correctly", () => {
+            return request(app)
+                .delete("/api/comments/1")
+                .expect(204)
+                
+
+        })
+
+        test("Status 404, returns an error if there isn't a  comment with the given id", () => {
+            return request(app)
+                .delete("/api/comments/00000")
+                .expect(404)
+                .then(({body:{msg}}) => {
+                    expect(msg).toBe("Comment not found")
+                    
                 })
         })
     })
