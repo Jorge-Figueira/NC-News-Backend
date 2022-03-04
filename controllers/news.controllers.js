@@ -1,5 +1,5 @@
-const {fetchTopics, fetchArticlesById, upvoteArticle, fetchUsers, fetchCommentsForArticle, fetchArticles, writeComment, removeComment} = require('../models/news.models')
-
+const {fetchTopics, fetchArticlesById, upvoteArticle, fetchUsers, fetchCommentsForArticle, fetchArticles, writeComment, removeComment, fetchAPIjson} = require('../models/news.models')
+const endpointsJson = require("../endpoints.json")
 exports.getTopics = (req, res) => {
     fetchTopics().then((topics) => {
         res.status(200).send({topics})
@@ -81,6 +81,12 @@ exports.deleteComment = (req, res, next) => {
             next(err)
         })
     
+}
+
+exports.getAPIjson = (req, res, next) => {
+    
+        res.status(200).send(endpointsJson)
+  
 }
 
 

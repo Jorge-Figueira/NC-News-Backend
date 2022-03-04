@@ -586,3 +586,18 @@ describe("/api/comments/:comment_id", () => {
         })
     })
 })
+
+
+
+describe.only("/api/", () => {
+    describe("GET", () => {
+        test("Status 200, returns an object with information about the api", () => {
+            return request(app)
+            .get("/api/")
+            .expect(200)
+            .then((endpointsJson) => {
+                console.log(endpointsJson, "mistery in test")
+            })
+        })
+    })
+})
