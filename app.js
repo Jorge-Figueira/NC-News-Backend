@@ -1,8 +1,10 @@
+const cors = require('cors')
 const express = require('express');
 const {getTopics, getArticlesById, updateArticleId, getUsers, getCommentsForArticle, getArticles, postComment, deleteComment, getAPIjson} = require("./controllers/news.controllers")
 const {error500, customerrors,psqlerrors} = require('./errors');
 
 const app = express();
+app.use(cors())
 app.use(express.json())
 
 app.get("/api/topics", getTopics);
