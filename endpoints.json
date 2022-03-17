@@ -1,27 +1,111 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "Responds with a JSON with instructions about every endopoint on the API"
   },
   "GET /api/topics": {
-    "description": "serves an array of all topics",
+    "description": "Responds with a JSON that contains an array on the key topics. Each item in the array is an object with two keys: description and slug.",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [
+        {"slug":"football","description":"FOOTIE!"}
+      ]
     }
   },
-  "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+  "GET /api/articles/:article_id": {
+    "description": "The response is a JSON with an object on the key article.",
+    "queries": [],
+    "exampleResponse": {"article":{
+      "article_id":3,
+      "title":"22 Amazing open source React projects",
+      "topic":"coding",
+      "author":"happyamy2016",
+      "body":"This is a collection of open source apps built with React.JS library. In this observation, we compared nearly 800 projects to pick the top 22. (React Native: 11, React: 11). To evaluate the quality, Mybridge AI considered a variety of factors to determine how useful the projects are for programmers. To give you an idea on the quality, the average number of Github stars from the 22 projects was 1,681.",
+      "created_at":"2020-02-29T11:12:00.000Z",
+      "votes":0,
+      "comment_count":"10"}}
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Takes an object as request with a key inc_votes -{ inc_votes: newVote }-, the response is a JSON containing the article with the number of votes updated",
+    "queries": [],
     "exampleResponse": {
-      "articles": [
+      "article":{
+        "article_id":1,
+        "title":"Running a Node App",
+        "topic":"coding",
+        "author":"jessjelly",
+        "body":"This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "created_at":"2020-11-07T06:03:00.000Z",
+        "votes":1 ,
+        "comment_count":"8"}}
+  },
+  "GET /api/users": {
+    "description": "Responds with a JSON that contains an array on the key users. Each item in the array is an object with a single key 'username'.",
+    "queries": [],
+    "exampleResponse": {
+      "users":[
+        {"username":"tickle122"},
+        {"username":"grumpy19"},
+        {"username":"happyamy2016"},
+        {"username":"cooljmessy"},
+        {"username":"weegembump"},
+        {"username":"jessjelly"}
+        ]
+      }
+  },
+  "GET /api/articles": {
+    "description": "Responds with a JSON that contains an array on the key articles. It accepts queries to sort by an especific column in ascending or descending order. It also accepts queries filtered by topic.",
+    "queries": ["sort_by", "order", "topic"],
+    "exampleResponse": {
+      "article":[
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "article_id":1,
+          "title":"Running a Node App",
+          "topic":"coding",
+          "author":"jessjelly",
+          "body":"This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+          "created_at":"2020-11-07T06:03:00.000Z",
+          "votes":0,
+          "comment_count":"8"
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "The response is a JSON containing an array of comments for the specific article. ",
+    "queries": [],
+    "exampleResponse": {
+      "comments": {
+        "comments":[
+          {"comment_id":31,
+            "votes":11,
+            "created_at":"2020-09-26T17:16:00.000Z",
+            "author":"weegembump",
+            "body":"Sit sequi odio suscipit. Iure quisquam qui alias distinctio eos officia enim aut sit. Corrupti ut praesentium ut iste earum itaque qui. Dolores in ab rerum consequuntur. Id ab aliquid autem dolore."
+          },
+          {
+            "comment_id":33,
+            "votes":4,
+            "created_at":"2019-12-31T21:21:00.000Z",
+            "author":"cooljmessy",
+            "body":"Explicabo perspiciatis voluptatem sunt tenetur maxime aut. Optio totam modi. Perspiciatis et quia."
+          }
+        ]
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Takes an object as request containing the keys username and body - {username:'lurker', body:'Let's see if it works'} - and returns a JSON containing the posted comment",
+    "queries": [],
+    "exampleResponse": {
+      "comment_id": 19,
+     "body": "Let's see if it works",
+      "article_id": 1,
+      "author": "lurker",
+      "votes": 0,
+      "created_at": "2022-03-06T19:58:42.477Z"
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes the comment with the given comment_id. Does not return a response body."
   }
 }
