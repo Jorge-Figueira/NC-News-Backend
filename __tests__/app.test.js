@@ -451,6 +451,16 @@ describe("/api/articles", () => {
           ]);
         });
     });
+    test("Status 200, the articles can be sorted by comment_count", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.map((article) => article.comment_count)).toEqual(
+            ["11", "2", "2", "2", "1", "0", "0", "0", "0", "0", "0", "0"],
+          );
+        });
+    });
     test("Status 200, the articles are sorted by date if no query is sent", () => {
       return request(app)
         .get("/api/articles")
@@ -570,7 +580,7 @@ describe("/api/comments/:comment_id", () => {
   });
 });
 
-describe.only("/api/", () => {
+describe("/api/", () => {
   describe("GET", () => {
     test("Status 200, returns an object with information about the api", () => {
       return request(app)
