@@ -16,7 +16,8 @@ This API has been developed at the end of the Backend Phase of the bootcamp as a
   - The response is a JSON with an object on the key article.
   - I does not accept queries.
   - Example of response:
-    ```{
+    ```
+    {
       "topics": [
         {"slug":"football","description":"FOOTIE!"}
       ]
@@ -45,7 +46,20 @@ This API has been developed at the end of the Backend Phase of the bootcamp as a
   - Takes an object as request with a key inc_votes - `{ inc_votes: newVote }` -, the response is a JSON containing the article with the number of votes updated.
   - Does not accept queries.
     Example of response:
-    ` article":{ "article_id":1, "title":"Running a Node App", "topic":"coding", "author":"jessjelly", "body":"This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.", "created_at":"2020-11-07T06:03:00.000Z", "votes":1 , "comment_count":"8"}} `
+    ```
+    {
+      "article":{
+        "article_id":1,
+        "title":"Running a Node App",
+        "topic":"coding",
+        "author":"jessjelly",
+        "body":"This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "created_at":"2020-11-07T06:03:00.000Z",
+        "votes":1 ,
+        "comment_count":"8"
+        }
+    }
+    ```
 
 - GET /api/users:
 
